@@ -66,7 +66,13 @@ cd leanSaude_app
 npm install
 ```
 
-#### 2. Rode a aplicação:
+#### 2. Crie um arquivo .env com:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3333
+```
+
+#### 3. Rode a aplicação:
 
 ```bash
 npm run dev
@@ -108,8 +114,8 @@ Se tivesse mais tempo, gostaria de adicionar:
 
 ### No frontend:
 
-**Implementar React Query para cache**
-**Melhorar feedback visual nas ações do usuário**
+**Aprimorar verificações de segurança**
+**Melhorar feedback visual usuário**
 **Aprimorar fluxo de autenticação**
 **Otimizar a experiência mobile**
 
