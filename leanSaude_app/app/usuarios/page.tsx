@@ -15,11 +15,11 @@ import {
 } from "@/components/ui/select";
 
 type SearchUser = {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   createdAt: string;
-  status: "active" | "inactive";
+  status: "ACTIVE" | "INACTIVE";
 };
 
 export default function UsuariosPage() {
@@ -67,8 +67,22 @@ export default function UsuariosPage() {
     fetchUsers();
   }, [currentPage, itemsPerPage, sortConfig, filters, searchQuery]);
 
-  const toggleUserStatus = (userId: number) => {
-    console.log("Toggling status for user:", userId);
+  const toggleUserStatus = async (userId: string) => {
+    setLoading(true);
+    try {
+      const user = users.find((u) => u.id === userId);
+      const newStatus = user?.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+      await api.patch(`/users/${userId}/status`, {
+        status: newStatus,
+      });
+
+      await fetchUsers();
+    } catch (err) {
+      console.error("Erro ao alterar status do usuário:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredUsers = users.filter((user) => {

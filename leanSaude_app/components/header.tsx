@@ -18,7 +18,7 @@ export function Header() {
 
   const navItems = [
     { name: "Clientes", href: "/usuarios" },
-    { name: "Endereços", href: "/login" },
+    { name: "Endereços", href: "/enderecos" },
     { name: "Entregas", href: "/login" },
   ];
 

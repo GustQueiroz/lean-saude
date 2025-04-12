@@ -33,11 +33,11 @@ import {
 import { formatDate } from "@/lib/utils";
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   createdAt: string;
-  status: "active" | "inactive";
+  status: "ACTIVE" | "INACTIVE";
 }
 
 interface SortConfig {
@@ -50,7 +50,7 @@ interface UserTableProps {
   loading: boolean;
   sortConfig: SortConfig;
   setSortConfig: (config: SortConfig) => void;
-  toggleUserStatus: (userId: number) => void;
+  toggleUserStatus: (userId: string) => void;
   currentPage: number;
   totalPages: number;
   setCurrentPage: (page: number) => void;
@@ -71,7 +71,7 @@ export function UserTable({
   setItemsPerPage,
   totalItems,
 }: UserTableProps) {
-  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   const handleSort = (key: string) => {
     setSortConfig({
@@ -218,7 +218,9 @@ export function UserTable({
                         <DropdownMenuItem
                           onClick={() => toggleUserStatus(user.id)}
                         >
-                          {user.status === "active" ? "Inativar" : "Ativar"}
+                          {user.status.toUpperCase() === "ACTIVE"
+                            ? "Inativar"
+                            : "Ativar"}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
