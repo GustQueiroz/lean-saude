@@ -25,6 +25,28 @@ export class UsersService {
     private readonly sqsService: SqsService
   ) {}
 
+  async updateStatus(userId: string, status: UserStatus) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException("Usuário não encontrado");
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { status },
+    });
+
+    this.sqsService.sendMessage({
+      event: "USER_STATUS_UPDATED",
+      userId: updated.id,
+      newStatus: updated.status,
+      timestamp: new Date().toISOString(),
+    });
+
+    return updated;
+  }
+
   async findAll(params: FindAllParams) {
     const {
       page = 1,

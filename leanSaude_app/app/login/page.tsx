@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
   const router = useRouter();
-
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     setError("");
+    setEmailError("");
+    setPasswordError("");
 
     try {
       const response = await api.post("/auth/login", {
@@ -28,9 +32,16 @@ export default function LoginPage() {
       localStorage.setItem("token", response.data.access_token);
       router.push("/usuarios");
     } catch (err: any) {
-      const message =
-        err.response?.data?.message || "Erro ao fazer login. Tente novamente.";
-      setError(message);
+      const message = err.response?.data?.message || "Erro ao fazer login.";
+      if (message.toLowerCase().includes("email")) {
+        setEmailError("Email não encontrado. Confira e tente novamente.");
+      } else if (message.toLowerCase().includes("senha")) {
+        setPasswordError(
+          "Senha incorreta. Por favor, verifique e tente novamente."
+        );
+      } else {
+        setError("Erro ao fazer login. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -53,22 +64,33 @@ export default function LoginPage() {
           )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div>
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={emailError ? "border-red-500" : ""}
+                required
+              />
+              {emailError && (
+                <p className="text-sm text-red-500 mt-1">{emailError}</p>
+              )}
+            </div>
 
-            <Input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-
+            <div>
+              <Input
+                type="password"
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={passwordError ? "border-red-500" : ""}
+                required
+              />
+              {passwordError && (
+                <p className="text-sm text-red-500 mt-1">{passwordError}</p>
+              )}
+            </div>
             <a href="#" className="text-primary hover:underline text-sm">
               Esqueceu sua senha?
             </a>
