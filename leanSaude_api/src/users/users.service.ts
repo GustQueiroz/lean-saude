@@ -36,10 +36,22 @@ export class UsersService {
 
     const where: Prisma.UserWhereInput = this.buildWhere(filters);
 
+    const order = (() => {
+      if (orderBy === "status") {
+        return {
+          status: sort,
+        };
+      }
+
+      return {
+        [orderBy]: sort,
+      };
+    })();
+
     const [users, total] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         where,
-        orderBy: { [orderBy]: sort },
+        orderBy: order,
         skip: (page - 1) * perPage,
         take: perPage,
       }),
@@ -55,34 +67,11 @@ export class UsersService {
     };
   }
 
-  async updateStatus(userId: string, status: UserStatus) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-
-    if (!user) {
-      throw new NotFoundException("Usuário não encontrado");
-    }
-
-    const updated = await this.prisma.user.update({
-      where: { id: userId },
-      data: { status },
-    });
-
-    this.sqsService.sendMessage({
-      event: "USER_STATUS_UPDATED",
-      userId: updated.id,
-      newStatus: updated.status,
-      timestamp: new Date().toISOString(),
-    });
-
-    return updated;
-  }
-
   private buildWhere(filters: FilterQuery[]): Prisma.UserWhereInput {
     if (!filters.length) return {};
 
     const conditions = filters.map((filter) => {
       const { column, operator, value } = filter;
-
       const condition: Prisma.UserWhereInput = {};
 
       if ((column === "name" || column === "phone") && operator === "equals") {
@@ -99,7 +88,10 @@ export class UsersService {
             } as any;
             break;
           case "equals":
-            condition[column] = value as any;
+            condition[column] = {
+              equals: value,
+              mode: "insensitive",
+            } as any;
             break;
           case "gte":
             condition[column] = { gte: new Date(value) } as any;
@@ -131,8 +123,6 @@ export class UsersService {
       };
     }
 
-    return {
-      AND: conditions,
-    };
+    return { AND: conditions };
   }
 }

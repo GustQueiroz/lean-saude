@@ -6,6 +6,13 @@ import { Search } from "lucide-react";
 import { UserFilters, Filter } from "@/components/user-filters";
 import { UserTable } from "@/components/user-table";
 import { api } from "@/lib/api";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 export default function UsuariosPage() {
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -33,8 +40,8 @@ export default function UsuariosPage() {
           page: currentPage,
           perPage: itemsPerPage,
           orderBy: sortConfig.key,
-          order: sortConfig.direction,
           query: searchQuery,
+          sort: sortConfig.direction,
           filters: JSON.stringify(filters),
         },
       });
@@ -68,6 +75,36 @@ export default function UsuariosPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 w-80 mr-10"
           />
+        </div>
+        <div className="w-40 mr-10">
+          <Select
+            value={sortConfig.key + "-" + sortConfig.direction}
+            onValueChange={(value) => {
+              const [key, direction] = value.split("-");
+              setSortConfig({
+                key: key as "id" | "name" | "phone" | "createdAt" | "status",
+                direction: direction as "asc" | "desc",
+              });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name-asc">Nome (A-Z)</SelectItem>
+              <SelectItem value="name-desc">Nome (Z-A)</SelectItem>
+              <SelectItem value="createdAt-desc">Mais recentes</SelectItem>
+              <SelectItem value="createdAt-asc">Mais antigos</SelectItem>
+              <SelectItem value="status-desc">
+                Status (Inativos primeiro)
+              </SelectItem>
+              <SelectItem value="status-asc">
+                Status (Ativos primeiro)
+              </SelectItem>
+              <SelectItem value="id-asc">ID (A-Z)</SelectItem>
+              <SelectItem value="id-desc">ID (Z-A)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <UserFilters filters={filters} setFilters={setFilters} />
       </div>
