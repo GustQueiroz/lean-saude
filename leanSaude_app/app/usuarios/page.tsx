@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { UserFilters } from "@/components/user-filters";
+import { UserFilters, Filter } from "@/components/user-filters";
 import { UserTable } from "@/components/user-table";
 import { api } from "@/lib/api";
 
 export default function UsuariosPage() {
-  const [filters, setFilters] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -35,6 +35,7 @@ export default function UsuariosPage() {
           orderBy: sortConfig.key,
           order: sortConfig.direction,
           query: searchQuery,
+          filters: JSON.stringify(filters),
         },
       });
 
@@ -49,7 +50,7 @@ export default function UsuariosPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, itemsPerPage, sortConfig, searchQuery]);
+  }, [currentPage, itemsPerPage, sortConfig, filters, searchQuery]);
 
   const toggleUserStatus = (userId: number) => {
     console.log("Toggling status for user:", userId);
@@ -58,14 +59,14 @@ export default function UsuariosPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Usuários</h1>
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1">
+      <div className="flex">
+        <div className="relative ">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Pesquisar ID ou nome ou telefone..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 w-80 mr-10"
           />
         </div>
         <UserFilters filters={filters} setFilters={setFilters} />

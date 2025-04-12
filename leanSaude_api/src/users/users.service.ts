@@ -7,6 +7,7 @@ interface FilterQuery {
   column: keyof Prisma.UserWhereInput;
   operator: "equals" | "contains" | "gte" | "lte";
   value: string;
+  condition?: "AND" | "OR";
 }
 
 interface FindAllParams {
@@ -77,36 +78,61 @@ export class UsersService {
   }
 
   private buildWhere(filters: FilterQuery[]): Prisma.UserWhereInput {
-    const andConditions: Prisma.UserWhereInput[] = [];
+    if (!filters.length) return {};
 
-    for (const filter of filters) {
+    const conditions = filters.map((filter) => {
       const { column, operator, value } = filter;
 
       const condition: Prisma.UserWhereInput = {};
 
-      switch (operator) {
-        case "contains":
-          condition[column] = {
-            contains: value,
-            mode: "insensitive",
-          } as any;
-          break;
-        case "equals":
-          condition[column] = value as any;
-          break;
-        case "gte":
-          condition[column] = { gte: new Date(value) } as any;
-          break;
-        case "lte":
-          condition[column] = { lte: new Date(value) } as any;
-          break;
+      if ((column === "name" || column === "phone") && operator === "equals") {
+        condition[column] = {
+          contains: value,
+          mode: "insensitive",
+        } as any;
+      } else {
+        switch (operator) {
+          case "contains":
+            condition[column] = {
+              contains: value,
+              mode: "insensitive",
+            } as any;
+            break;
+          case "equals":
+            condition[column] = value as any;
+            break;
+          case "gte":
+            condition[column] = { gte: new Date(value) } as any;
+            break;
+          case "lte":
+            condition[column] = { lte: new Date(value) } as any;
+            break;
+        }
       }
 
-      andConditions.push(condition);
+      return condition;
+    });
+
+    const hasOr = filters.some((f) => f.condition === "OR");
+
+    if (hasOr) {
+      const orConditions = conditions.filter(
+        (_, i) => filters[i].condition === "OR"
+      );
+      const andConditions = conditions.filter(
+        (_, i) => !filters[i].condition || filters[i].condition === "AND"
+      );
+
+      return {
+        AND: [
+          ...andConditions,
+          ...(orConditions.length ? [{ OR: orConditions }] : []),
+        ],
+      };
     }
 
     return {
-      AND: andConditions,
+      AND: conditions,
     };
   }
 }
