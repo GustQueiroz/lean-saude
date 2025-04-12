@@ -126,6 +126,8 @@ export default function UsuariosPage() {
               <SelectItem value="name-desc">Nome (Z-A)</SelectItem>
               <SelectItem value="createdAt-desc">Mais recentes</SelectItem>
               <SelectItem value="createdAt-asc">Mais antigos</SelectItem>
+              <SelectItem value="phone-asc">Telefone (menor)</SelectItem>
+              <SelectItem value="phone-desc">Telefone (maior)</SelectItem>
               <SelectItem value="status-desc">
                 Status (Inativos primeiro)
               </SelectItem>
