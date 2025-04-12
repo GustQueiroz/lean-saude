@@ -46,6 +46,8 @@ interface SortConfig {
 }
 
 interface UserTableProps {
+  users: User[];
+  loading: boolean;
   sortConfig: SortConfig;
   setSortConfig: (config: SortConfig) => void;
   toggleUserStatus: (userId: number) => void;
@@ -57,45 +59,8 @@ interface UserTableProps {
   totalItems: number;
 }
 
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: "João Silva",
-    phone: "(11) 99999-9999",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    status: "active",
-  },
-  {
-    id: 2,
-    name: "Maria Santos",
-    phone: "(11) 88888-8888",
-    createdAt: "2024-01-02T00:00:00.000Z",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Pedro Oliveira",
-    phone: "(11) 77777-7777",
-    createdAt: "2024-01-03T00:00:00.000Z",
-    status: "inactive",
-  },
-  {
-    id: 4,
-    name: "Ana Costa",
-    phone: "(11) 66666-6666",
-    createdAt: "2024-01-04T00:00:00.000Z",
-    status: "active",
-  },
-  {
-    id: 5,
-    name: "Carlos Pereira",
-    phone: "(11) 55555-5555",
-    createdAt: "2024-01-05T00:00:00.000Z",
-    status: "inactive",
-  },
-];
-
 export function UserTable({
+  users,
   sortConfig,
   setSortConfig,
   toggleUserStatus,
@@ -107,7 +72,6 @@ export function UserTable({
   totalItems,
 }: UserTableProps) {
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
-  const [users, setUsers] = useState<User[]>(mockUsers);
 
   const handleSort = (key: string) => {
     setSortConfig({
@@ -200,22 +164,26 @@ export function UserTable({
                   key={user.id}
                   className={selectedUser === user.id ? "bg-muted/50" : ""}
                 >
-                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{String(user.id).slice(0, 8)}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>
                     <Badge
                       variant={
-                        user.status === "active" ? "outline" : "destructive"
+                        user.status.toLowerCase() === "active"
+                          ? "outline"
+                          : "destructive"
                       }
                       className={
-                        user.status === "active"
+                        user.status.toLowerCase() === "active"
                           ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800"
                           : "bg-red-100 text-red-800 hover:bg-red-100 hover:text-red-800"
                       }
                     >
-                      {user.status === "active" ? "Ativo" : "Inativo"}
+                      {user.status.toLowerCase() === "active"
+                        ? "Ativo"
+                        : "Inativo"}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -292,7 +260,6 @@ export function UserTable({
   );
 }
 
-// Funções auxiliares para paginação
 function indexOfFirstItem(currentPage: number, itemsPerPage: number): number {
   return (currentPage - 1) * itemsPerPage;
 }
