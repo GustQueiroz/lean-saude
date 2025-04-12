@@ -96,32 +96,24 @@ export class UsersService {
       const { column, operator, value } = filter;
       const condition: Prisma.UserWhereInput = {};
 
-      if ((column === "name" || column === "phone") && operator === "equals") {
-        condition[column] = {
-          contains: value,
-          mode: "insensitive",
-        } as any;
-      } else {
-        switch (operator) {
-          case "contains":
-            condition[column] = {
-              contains: value,
-              mode: "insensitive",
-            } as any;
-            break;
-          case "equals":
-            condition[column] = {
-              equals: value,
-              mode: "insensitive",
-            } as any;
-            break;
-          case "gte":
-            condition[column] = { gte: new Date(value) } as any;
-            break;
-          case "lte":
-            condition[column] = { lte: new Date(value) } as any;
-            break;
-        }
+      switch (operator) {
+        case "contains":
+          condition[column] = {
+            contains: value,
+            mode: "insensitive",
+          } as any;
+          break;
+        case "equals":
+          condition[column] = {
+            equals: value,
+          } as any;
+          break;
+        case "gte":
+          condition[column] = { gte: new Date(value) } as any;
+          break;
+        case "lte":
+          condition[column] = { lte: new Date(value) } as any;
+          break;
       }
 
       return condition;

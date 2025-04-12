@@ -72,10 +72,20 @@ npm install
 NEXT_PUBLIC_API_URL=http://localhost:3333
 ```
 
-#### 3. Rode a aplicação:
+#### 3. Rode a aplicação em interface de desenvolvimento:
 
 ```bash
 npm run dev
+```
+
+#### Ou se preferir, rode a aplicação ja compilada:
+
+```bash
+npm run build
+```
+
+```bash
+npm start
 ```
 
 Acesse em:
