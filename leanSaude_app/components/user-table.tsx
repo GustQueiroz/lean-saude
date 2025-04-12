@@ -97,6 +97,23 @@ export function UserTable({
     );
   };
 
+  function formatPhone(phone: string): string {
+    const cleaned = phone.replace(/\D/g, "");
+    if (cleaned.length < 11) return phone;
+    return `+55 (${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(
+      7,
+      11
+    )}`;
+  }
+
+  function indexOfFirstItem(currentPage: number, itemsPerPage: number): number {
+    return (currentPage - 1) * itemsPerPage;
+  }
+
+  function indexOfLastItem(currentPage: number, itemsPerPage: number): number {
+    return currentPage * itemsPerPage;
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -166,7 +183,7 @@ export function UserTable({
                 >
                   <TableCell>{String(user.id).slice(0, 8)}</TableCell>
                   <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>{formatPhone(user.phone)}</TableCell>
                   <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>
                     <Badge
@@ -226,7 +243,7 @@ export function UserTable({
             <SelectContent>
               <SelectItem value="5">5</SelectItem>
               <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="25">25</SelectItem>
               <SelectItem value="50">50</SelectItem>
             </SelectContent>
           </Select>
@@ -258,12 +275,4 @@ export function UserTable({
       </div>
     </div>
   );
-}
-
-function indexOfFirstItem(currentPage: number, itemsPerPage: number): number {
-  return (currentPage - 1) * itemsPerPage;
-}
-
-function indexOfLastItem(currentPage: number, itemsPerPage: number): number {
-  return currentPage * itemsPerPage;
 }

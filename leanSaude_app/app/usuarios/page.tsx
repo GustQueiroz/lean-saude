@@ -14,6 +14,14 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+type SearchUser = {
+  id: number;
+  name: string;
+  phone: string;
+  createdAt: string;
+  status: "active" | "inactive";
+};
+
 export default function UsuariosPage() {
   const [filters, setFilters] = useState<Filter[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,9 +33,9 @@ export default function UsuariosPage() {
     direction: "asc",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
   const [totalItems, setTotalItems] = useState(0);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<SearchUser[]>([]);
   const [loading, setLoading] = useState(false);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -62,6 +70,15 @@ export default function UsuariosPage() {
   const toggleUserStatus = (userId: number) => {
     console.log("Toggling status for user:", userId);
   };
+
+  const filteredUsers = users.filter((user) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      user.name?.toLowerCase().startsWith(query) ||
+      user.phone?.toLowerCase().startsWith(query) ||
+      String(user.id).startsWith(query)
+    );
+  });
 
   return (
     <div className="space-y-6">
@@ -109,7 +126,7 @@ export default function UsuariosPage() {
         <UserFilters filters={filters} setFilters={setFilters} />
       </div>
       <UserTable
-        users={users}
+        users={filteredUsers}
         loading={loading}
         sortConfig={sortConfig}
         setSortConfig={setSortConfig}
