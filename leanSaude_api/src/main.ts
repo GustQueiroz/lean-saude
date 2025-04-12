@@ -14,6 +14,6 @@ async function bootstrap() {
   const port = config.get("PORT") || 3000;
 
   await app.listen(port);
-  console.log(`🚀 API rodando em http://localhost:${port}`);
+  console.log(`API rodando em http://localhost:${port}`);
 }
 bootstrap();

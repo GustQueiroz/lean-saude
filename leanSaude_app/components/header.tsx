@@ -52,7 +52,12 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/login";
+                }}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
               </DropdownMenuItem>

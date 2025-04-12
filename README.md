@@ -81,6 +81,11 @@ npm run dev
 Acesse em:
 `http://localhost:3000`
 
+#### 4. Faça logIn:
+
+email: camila@lean.com
+senha: 123456
+
 ---
 
 ## Arquitetura e Decisões Técnicas
