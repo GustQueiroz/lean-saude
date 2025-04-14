@@ -3,7 +3,7 @@
 ## O projeto está dividido em duas pastas principais:
 
 ```
-leanProject/
+lean-saude/
 ├─ leanSaude_api/     # Backend em Node.js + NestJS
 └─ leanSaude_app/     # Frontend em React.js + Next.js
 ```
@@ -37,7 +37,7 @@ cd leanSaude_api
 npm install
 ```
 
-#### 2. Crie um arquivo .env com:
+#### 2. Na pasta leanSaude_api crie um arquivo .env com:
 
 ```env
 DATABASE_URL="postgresql://leansaude_owner:npg_xmCd5qRT0eWk@ep-cold-base-acr1ztcg-pooler.sa-east-1.aws.neon.tech/leansaude?sslmode=require"
@@ -46,7 +46,13 @@ JWT_EXPIRES_IN=1d
 PORT=3333
 ```
 
-#### 3. Inicie a API:
+#### 3. Gere as dependencias do Prisma:
+
+```bash
+npx prisma generate
+```
+
+#### 4. Inicie a API:
 
 ```bash
 npm run start:dev
@@ -66,7 +72,7 @@ cd leanSaude_app
 npm install
 ```
 
-#### 2. Crie um arquivo .env com:
+#### 2. Na pasta leanSaude_app crie um arquivo .env com:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3333
