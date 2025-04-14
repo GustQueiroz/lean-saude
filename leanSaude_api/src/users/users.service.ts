@@ -92,8 +92,11 @@ export class UsersService {
   private buildWhere(filters: FilterQuery[]): Prisma.UserWhereInput {
     if (!filters.length) return {};
 
-    const conditions = filters.map((filter) => {
+    const rawConditions = filters.map((filter) => {
       const { column, operator, value } = filter;
+
+      if (!value?.trim()) return null;
+
       const condition: Prisma.UserWhereInput = {};
 
       switch (operator) {
@@ -103,14 +106,50 @@ export class UsersService {
             mode: "insensitive",
           } as any;
           break;
+
         case "equals":
-          condition[column] = {
-            equals: value,
-          } as any;
+          if (column === "createdAt") {
+            if (!value) return null;
+
+            try {
+              const [year, month, day] = value.split("-");
+              if (!year || !month || !day) return null;
+
+              const start = new Date(
+                Date.UTC(Number(year), Number(month) - 1, Number(day), 0, 0, 0)
+              );
+              const end = new Date(
+                Date.UTC(
+                  Number(year),
+                  Number(month) - 1,
+                  Number(day),
+                  23,
+                  59,
+                  59,
+                  999
+                )
+              );
+
+              condition["createdAt"] = {
+                gte: start,
+                lte: end,
+              };
+            } catch (error) {
+              console.error("Erro ao processar data:", error);
+              return null;
+            }
+          } else {
+            condition[column] = {
+              equals: value,
+              mode: typeof value === "string" ? "insensitive" : undefined,
+            } as any;
+          }
           break;
+
         case "gte":
           condition[column] = { gte: new Date(value) } as any;
           break;
+
         case "lte":
           condition[column] = { lte: new Date(value) } as any;
           break;
@@ -119,24 +158,30 @@ export class UsersService {
       return condition;
     });
 
+    const validConditions = rawConditions.filter(
+      (c): c is Prisma.UserWhereInput => c !== null
+    );
+
+    if (!validConditions.length) return {};
+
     const hasOr = filters.some((f) => f.condition === "OR");
 
     if (hasOr) {
-      const orConditions = conditions.filter(
+      const orConditions = validConditions.filter(
         (_, i) => filters[i].condition === "OR"
       );
-      const andConditions = conditions.filter(
+      const andConditions = validConditions.filter(
         (_, i) => !filters[i].condition || filters[i].condition === "AND"
       );
 
       return {
         AND: [
           ...andConditions,
-          ...(orConditions.length ? [{ OR: orConditions }] : []),
+          ...(orConditions.length > 0 ? [{ OR: orConditions }] : []),
         ],
       };
     }
 
-    return { AND: conditions };
+    return { AND: validConditions };
   }
 }

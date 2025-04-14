@@ -34,8 +34,8 @@ export function UserFilters({ filters, setFilters }: UserFiltersProps) {
     setFilters([
       ...filters,
       {
-        column: "createdAt",
-        operator: "equals",
+        column: "name",
+        operator: "contains",
         value: "",
         condition: filters.length > 0 ? "AND" : undefined,
       },
@@ -137,10 +137,6 @@ export function UserFilters({ filters, setFilters }: UserFiltersProps) {
                       <SelectContent>
                         <SelectItem value="name">Nome</SelectItem>
                         <SelectItem value="phone">Telefone</SelectItem>
-                        <SelectItem value="status">Status</SelectItem>
-                        <SelectItem value="createdAt">
-                          Data de cadastro
-                        </SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -149,15 +145,16 @@ export function UserFilters({ filters, setFilters }: UserFiltersProps) {
                       onValueChange={(value: Operator) =>
                         updateFilter(index, { operator: value })
                       }
+                      disabled={filter.column === "createdAt"}
                     >
                       <SelectTrigger className="w-[130px]">
                         <SelectValue placeholder="Operador" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="equals">é</SelectItem>
-                        <SelectItem value="contains">contém</SelectItem>
-                        <SelectItem value="gte">a partir de</SelectItem>
-                        <SelectItem value="lte">até</SelectItem>
+                        {filter.column !== "createdAt" && (
+                          <SelectItem value="contains">contém</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
 
